@@ -1,0 +1,51 @@
+name: Build ARM64 Executables
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  build-arm64:
+    runs-on: ubuntu-24.04-arm
+    container:
+      image: debian:12-slim
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          apt-get update
+          apt-get install -y build-essential ca-certificates
+
+      - name: Show build environment
+        run: |
+          cat /etc/os-release
+          ldd --version | head -n1
+
+      - name: Generate makefiles
+        run: ./genMakefiles linux-no-openssl
+
+      - name: Build
+        run: make -j"$(nproc)"
+
+      - name: Collect executables
+        run: |
+          mkdir -p artifacts/bin
+          cp testProgs/testRTSPClient artifacts/bin/
+          cp testProgs/openRTSP artifacts/bin/
+          cp proxyServer/live555ProxyServer artifacts/bin/
+          cp mediaServer/live555MediaServer artifacts/bin/
+          cp hlsProxy/live555HLSProxy artifacts/bin/
+
+      - name: Upload ARM64 executables
+        uses: actions/upload-artifact@v4
+        with:
+          name: live555-arm64-executables
+          path: artifacts/bin/
+          if-no-files-found: error
