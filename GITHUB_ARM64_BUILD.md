@@ -1,10 +1,10 @@
 # GitHub ARM64 Build
 
-This repository includes a GitHub Actions workflow that builds the project on an ARM64 runner without OpenSSL/TLS dependencies and uploads key executables as an artifact.
+This repository includes a GitHub Actions workflow that builds the project in a **Debian 12 (bookworm) ARM64** environment and uploads key executables as an artifact.
 
 ## Workflow file
 
-- `.github/workflows/build-arm64.yml` (uses `./genMakefiles linux-no-openssl`)
+- `.github/workflows/build-arm64.yml` (uses `debian:12-slim` container + `./genMakefiles linux-no-openssl`)
 
 ## How to run
 
@@ -13,10 +13,11 @@ This repository includes a GitHub Actions workflow that builds the project on an
 3. Run **Build ARM64 Executables** (or push/PR to trigger automatically).
 4. Download artifact: **live555-arm64-executables**.
 
-## Notes for Debian 11 ARM64 (no OpenSSL 3)
+## Build environment details
 
-- The workflow intentionally uses `linux-no-openssl` so it does not require OpenSSL 3.
-- TLS-related functionality (RTSPS/SRTP) is disabled in this build.
+- Base image: Debian 12 (bookworm)
+- glibc: 2.36 series
+- Build mode: `linux-no-openssl` (TLS features disabled: RTSPS/SRTP)
 
 ## Included executables
 
